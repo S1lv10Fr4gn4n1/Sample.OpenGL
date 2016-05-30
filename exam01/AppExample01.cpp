@@ -1,10 +1,14 @@
 #include "AppExample01.h"
+
+#include <GL/glew.h>
+#include <SDL2/SDL.h>
+#include <vector>
 #include "utils/OpenGLUtils.h"
 #include "utils/FileUtils.h"
-#include <GL/glew.h>
 
 GLuint VAO = 0;
 GLuint programId = 0;
+GLuint timeLocation;
 
 AppExample01::AppExample01() {
 }
@@ -33,7 +37,7 @@ bool AppExample01::init() {
 	// create VBO
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STREAM_DRAW);
 
 	// create VAO
 	glGenVertexArrays(1, &VAO);
@@ -42,7 +46,16 @@ bool AppExample01::init() {
 	glEnableVertexAttribArray(0); // layout 1, position
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(1); // layout 2, color
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)48);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*) 48);
+
+	// get the variable offset (uniform) from vertex shader
+	timeLocation = glGetUniformLocation(programId, "time");
+
+	// set loopDuration on vertex shader
+	GLuint loopDurationLocation = glGetUniformLocation(programId, "loopDuration");
+	glUseProgram(programId);
+	glUniform1f(loopDurationLocation, 3.0f);
+	glUseProgram(0);
 
 	return true;
 }
@@ -52,7 +65,8 @@ const char * AppExample01::getTitle() {
 }
 
 void AppExample01::update(float timeStep) {
-	//Log::print("update %f", timeStep);
+//Log::print("update %f", timeStep);
+
 }
 
 void AppExample01::render(float timeStep) {
@@ -65,6 +79,7 @@ void AppExample01::render(float timeStep) {
 
 	// bind program
 	glUseProgram(programId);
+	glUniform1f(timeLocation, SDL_GetTicks() / 1000.0f);
 	glBindVertexArray(VAO);
 
 	// draw points 0-3 from the currently bound VAO with current in-use shader
