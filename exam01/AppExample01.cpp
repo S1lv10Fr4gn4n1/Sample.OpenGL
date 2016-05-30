@@ -1,9 +1,9 @@
 #include "AppExample01.h"
 #include "utils/OpenGLUtils.h"
+#include "utils/FileUtils.h"
 #include <GL/glew.h>
 
-GLuint gVAO1 = 0;
-GLuint gVAO2 = 0;
+GLuint VAO = 0;
 GLuint programId = 0;
 
 AppExample01::AppExample01() {
@@ -13,51 +13,36 @@ AppExample01::~AppExample01() {
 }
 
 bool AppExample01::init() {
-	// vertex shader source
-	const GLchar *vertexShaderSource = { "#version 400\nin vec3 vp; "
-			"void main() { "
-			"		gl_Position = vec4(vp, 1.0); "
-			"}" };
+	std::string vertexShader = File::getFileContent("./exam01/shader03.vert");
+	std::string fragmentShader = File::getFileContent("./exam01/shader03.frag");
 
-	// fragment shader source
-	const GLchar *fragmentShaderSource { "#version 400\nout "
-			"vec4 frag_colour; "
-			"void main() { "
-			"	frag_colour = vec4(1.0, 1.0, 1.0, 1.0); "
-			"}" };
-
-	programId = OpenGLUtils::initGLStructure(vertexShaderSource, fragmentShaderSource);
+	programId = OpenGLUtils::initGLStructure(vertexShader.c_str(), fragmentShader.c_str());
 
 	// Vertex Buffer Object (VBO) Data
-	GLfloat vertexData1[] = { 0.0f, 0.5f, 0.0f, 0.5f, -0.5f, 0.0f, -0.5f, -0.5f, 0.0f };
-	GLfloat vertexData2[] = { 0.5f, 0.9f, 0.0f, 0.9f, 0.5f, 0.0f, 0.5f, 0.5f, 0.0f };
+	const GLfloat vertexData[] = {
+	     0.0f,    0.5f, 0.0f, 1.0f, // point 1
+	     0.5f, -0.366f, 0.0f, 1.0f, // point 2
+	    -0.5f, -0.366f, 0.0f, 1.0f, // point 3
+	     1.0f,    0.0f, 0.0f, 1.0f, // color 1
+	     0.0f,    1.0f, 0.0f, 1.0f, // color 2
+	     0.0f,    0.0f, 1.0f, 1.0f, // color 3
+	};
 
-	GLuint gVBO1;
-	GLuint gVBO2;
+	GLuint VBO;
 
-	// create VBO1
-	glGenBuffers(1, &gVBO1);
-	glBindBuffer(GL_ARRAY_BUFFER, gVBO1);
-	glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(GLfloat), vertexData1, GL_STATIC_DRAW);
+	// create VBO
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 
-	// create VAO1
-	glGenVertexArrays(1, &gVAO1);
-	glBindVertexArray(gVAO1);
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, gVBO1);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	// create VBO2
-	glGenBuffers(1, &gVBO2);
-	glBindBuffer(GL_ARRAY_BUFFER, gVBO2);
-	glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(GLfloat), vertexData2, GL_STATIC_DRAW);
-
-	// create VAO2
-	glGenVertexArrays(1, &gVAO2);
-	glBindVertexArray(gVAO2);
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, gVBO2);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	// create VAO
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glEnableVertexAttribArray(0); // layout 1, position
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1); // layout 2, color
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)48);
 
 	return true;
 }
@@ -71,20 +56,18 @@ void AppExample01::update(float timeStep) {
 }
 
 void AppExample01::render(float timeStep) {
-	//Log::print("render %f", timeStep);
+//	Log::print("render %f", timeStep);
 
 	// initialize clear color
-	glClearColor(0.5f, 0.5f, 0.5f, 1.f);
+	glClearColor(0.9f, 0.9f, 0.9f, 1.f);
 	// wipe the drawing surface clear
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// bind program
 	glUseProgram(programId);
-	glBindVertexArray(gVAO1);
-	// draw points 0-3 from the currently bound VAO with current in-use shader
-	glDrawArrays(GL_TRIANGLE_FAN, 0, 3);
+	glBindVertexArray(VAO);
 
-	glBindVertexArray(gVAO2);
+	// draw points 0-3 from the currently bound VAO with current in-use shader
 	glDrawArrays(GL_TRIANGLE_FAN, 0, 3);
 
 	// unbind program

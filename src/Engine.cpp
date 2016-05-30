@@ -21,6 +21,41 @@ void Engine::setApp(AbstractApp *app) {
 	this->app = app;
 }
 
+bool Engine::init() {
+	if (!app) {
+		Log::print("App not informed");
+		return false;
+	}
+
+	if (!initSDL()) {
+		return false;
+	}
+
+	setupOpenGL();
+
+	if (!initSDLWindow()) {
+		return false;
+	}
+
+	if (!initSDLGLContext()) {
+		return false;
+	}
+
+	if (!initGLEW()) {
+		return false;
+	}
+
+	printVersions();
+
+	if (!app->init()) {
+		return false;
+	}
+
+	reshape();
+
+	return true;
+}
+
 int Engine::execute() {
 	if (!init()) {
 		halt("Engine init problem");
@@ -65,41 +100,6 @@ int Engine::execute() {
 	return 0;
 }
 
-bool Engine::init() {
-	if (!app) {
-		Log::print("App not informed");
-		return false;
-	}
-
-	if (!initSDL()) {
-		return false;
-	}
-
-	setupOpenGL();
-
-	if (!initSDLWindow()) {
-		return false;
-	}
-
-	if (!initSDLGLContext()) {
-		return false;
-	}
-
-	if (!initGLEW()) {
-		return false;
-	}
-
-	printVersions();
-
-	if (!app->init()) {
-		return false;
-	}
-
-	reshape();
-
-	return true;
-}
-
 void Engine::update(float timeStep) {
 	app->update(timeStep);
 }
@@ -121,7 +121,7 @@ void Engine::cleanUp() {
 }
 
 void Engine::halt(const char *_msg) {
-	Log::print("Die: %s, %s", _msg, SDL_GetError());
+	Log::print("Halt: %s, %s", _msg, SDL_GetError());
 	cleanUp();
 }
 
@@ -158,7 +158,6 @@ bool Engine::eventHandler() {
 			}
 		}
 	}
-
 	return true;
 }
 
