@@ -53,8 +53,10 @@ bool AppExample01::init() {
 
 	// set loopDuration on vertex shader
 	GLuint loopDurationLocation = glGetUniformLocation(programId, "loopDuration");
+	GLuint fragLoopDuration = glGetUniformLocation(programId, "fragLoopDuration");
 	glUseProgram(programId);
-	glUniform1f(loopDurationLocation, 3.0f);
+	glUniform1f(loopDurationLocation, 5.0f);
+	glUniform1f(fragLoopDuration, 10.0f);
 	glUseProgram(0);
 
 	return true;
