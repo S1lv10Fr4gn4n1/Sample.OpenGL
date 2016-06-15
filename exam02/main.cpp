@@ -3,7 +3,6 @@
 
 int main() {
 	AppExample02 *app = new AppExample02();
-	app->build();
 
 	Engine *engine = new Engine();
 	engine->setApp(app);
