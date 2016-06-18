@@ -136,17 +136,25 @@ bool AppExample02::init() {
 	glEnableVertexAttribArray(1); // layout 2, color
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*) (sizeof(vertexData) / 2));
 
+	// setup perspective matrix
+	float frustumScale = 1.0f;
+	float zNear = 0.5f;
+	float zFar = 3.0f;
+	float perspectiveMatrix[16];
+	memset(perspectiveMatrix, 0, sizeof(float)*16);
+	perspectiveMatrix[0] = frustumScale;
+	perspectiveMatrix[5] = frustumScale;
+	perspectiveMatrix[10] = (zFar + zNear) / (zNear-zFar);
+	perspectiveMatrix[14] = (2 * zFar * zNear) / (zNear - zFar);
+	perspectiveMatrix[11] = -1.0f;
+
 	GLuint offsetUniform = glGetUniformLocation(programId, "offset");
-	GLuint frustumScaleUnif = glGetUniformLocation(programId, "frustumScale");
-	GLuint zNearUnif = glGetUniformLocation(programId, "zNear");
-	GLuint zFarUnif = glGetUniformLocation(programId, "zFar");
+	GLuint perspectiveMatrixUnif = glGetUniformLocation(programId, "perspectiveMatrix");
 
 	glUseProgram(programId);
 	glUniform2f(offsetUniform, 0.5f, 0.5f);
-	glUniform1f(frustumScaleUnif, 1.0f);
-	glUniform1f(zNearUnif, 1.0f);
-	glUniform1f(zFarUnif, 3.0f);
-	glUseProgram(0);
+	glUniformMatrix4fv(perspectiveMatrixUnif, 1, GL_FALSE, perspectiveMatrix);
+	glUseProgram(NULL);
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
@@ -160,7 +168,7 @@ const char * AppExample02::getTitle() {
 }
 
 void AppExample02::update(float timeStep) {
-//Log::print("update %f", timeStep);
+//	Log::print("update %f", timeStep);
 }
 
 void AppExample02::render(float timeStep) {
@@ -179,7 +187,7 @@ void AppExample02::render(float timeStep) {
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	// unbind program
-//	glUseProgram(NULL);
+	glUseProgram(NULL);
 }
 
 void AppExample02::cleanUp() {
