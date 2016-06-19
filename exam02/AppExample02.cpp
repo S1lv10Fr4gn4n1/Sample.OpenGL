@@ -5,9 +5,12 @@
 #include <vector>
 #include "utils/OpenGLUtils.h"
 #include "utils/FileUtils.h"
+#include "data.h"
 
 GLuint VAO = 0;
+GLfloat perspectiveMatrix[16];
 GLuint programId = 0;
+GLuint perspectiveMatrixUnif = 0;
 
 AppExample02::AppExample02() {
 }
@@ -15,114 +18,15 @@ AppExample02::AppExample02() {
 AppExample02::~AppExample02() {
 }
 
+
 bool AppExample02::init() {
 	std::string vertexShader = File::getFileContent("./exam02/shader01.vert");
 	std::string fragmentShader = File::getFileContent("./exam02/shader01.frag");
 
 	programId = OpenGLUtils::initGLStructure(vertexShader.c_str(), fragmentShader.c_str());
 
-	// Vertex Buffer Object (VBO) Data
-	const float vertexData[] = {
-		 0.25f,  0.25f, -1.25f, 1.0f,
-		 0.25f, -0.25f, -1.25f, 1.0f,
-		-0.25f,  0.25f, -1.25f, 1.0f,
-
-		 0.25f, -0.25f, -1.25f, 1.0f,
-		-0.25f, -0.25f, -1.25f, 1.0f,
-		-0.25f,  0.25f, -1.25f, 1.0f,
-
-		 0.25f,  0.25f, -2.75f, 1.0f,
-		-0.25f,  0.25f, -2.75f, 1.0f,
-		 0.25f, -0.25f, -2.75f, 1.0f,
-
-		 0.25f, -0.25f, -2.75f, 1.0f,
-		-0.25f,  0.25f, -2.75f, 1.0f,
-		-0.25f, -0.25f, -2.75f, 1.0f,
-
-		-0.25f,  0.25f, -1.25f, 1.0f,
-		-0.25f, -0.25f, -1.25f, 1.0f,
-		-0.25f, -0.25f, -2.75f, 1.0f,
-
-		-0.25f,  0.25f, -1.25f, 1.0f,
-		-0.25f, -0.25f, -2.75f, 1.0f,
-		-0.25f,  0.25f, -2.75f, 1.0f,
-
-		 0.25f,  0.25f, -1.25f, 1.0f,
-		 0.25f, -0.25f, -2.75f, 1.0f,
-		 0.25f, -0.25f, -1.25f, 1.0f,
-
-		 0.25f,  0.25f, -1.25f, 1.0f,
-		 0.25f,  0.25f, -2.75f, 1.0f,
-		 0.25f, -0.25f, -2.75f, 1.0f,
-
-		 0.25f,  0.25f, -2.75f, 1.0f,
-		 0.25f,  0.25f, -1.25f, 1.0f,
-		-0.25f,  0.25f, -1.25f, 1.0f,
-
-		 0.25f,  0.25f, -2.75f, 1.0f,
-		-0.25f,  0.25f, -1.25f, 1.0f,
-		-0.25f,  0.25f, -2.75f, 1.0f,
-
-		 0.25f, -0.25f, -2.75f, 1.0f,
-		-0.25f, -0.25f, -1.25f, 1.0f,
-		 0.25f, -0.25f, -1.25f, 1.0f,
-
-		 0.25f, -0.25f, -2.75f, 1.0f,
-		-0.25f, -0.25f, -2.75f, 1.0f,
-		-0.25f, -0.25f, -1.25f, 1.0f,
-
-		0.0f, 0.0f, 1.0f, 1.0f,
-		0.0f, 0.0f, 1.0f, 1.0f,
-		0.0f, 0.0f, 1.0f, 1.0f,
-
-		0.0f, 0.0f, 1.0f, 1.0f,
-		0.0f, 0.0f, 1.0f, 1.0f,
-		0.0f, 0.0f, 1.0f, 1.0f,
-
-		0.8f, 0.8f, 0.8f, 1.0f,
-		0.8f, 0.8f, 0.8f, 1.0f,
-		0.8f, 0.8f, 0.8f, 1.0f,
-
-		0.8f, 0.8f, 0.8f, 1.0f,
-		0.8f, 0.8f, 0.8f, 1.0f,
-		0.8f, 0.8f, 0.8f, 1.0f,
-
-		0.0f, 1.0f, 0.0f, 1.0f,
-		0.0f, 1.0f, 0.0f, 1.0f,
-		0.0f, 1.0f, 0.0f, 1.0f,
-
-		0.0f, 1.0f, 0.0f, 1.0f,
-		0.0f, 1.0f, 0.0f, 1.0f,
-		0.0f, 1.0f, 0.0f, 1.0f,
-
-		0.5f, 0.5f, 0.0f, 1.0f,
-		0.5f, 0.5f, 0.0f, 1.0f,
-		0.5f, 0.5f, 0.0f, 1.0f,
-
-		0.5f, 0.5f, 0.0f, 1.0f,
-		0.5f, 0.5f, 0.0f, 1.0f,
-		0.5f, 0.5f, 0.0f, 1.0f,
-
-		1.0f, 0.0f, 0.0f, 1.0f,
-		1.0f, 0.0f, 0.0f, 1.0f,
-		1.0f, 0.0f, 0.0f, 1.0f,
-
-		1.0f, 0.0f, 0.0f, 1.0f,
-		1.0f, 0.0f, 0.0f, 1.0f,
-		1.0f, 0.0f, 0.0f, 1.0f,
-
-		0.0f, 1.0f, 1.0f, 1.0f,
-		0.0f, 1.0f, 1.0f, 1.0f,
-		0.0f, 1.0f, 1.0f, 1.0f,
-
-		0.0f, 1.0f, 1.0f, 1.0f,
-		0.0f, 1.0f, 1.0f, 1.0f,
-		0.0f, 1.0f, 1.0f, 1.0f,
-	};
-
-	GLuint VBO;
-
 	// create VBO
+	GLuint VBO;
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
@@ -137,19 +41,15 @@ bool AppExample02::init() {
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*) (sizeof(vertexData) / 2));
 
 	// setup perspective matrix
-	float frustumScale = 1.0f;
-	float zNear = 0.5f;
-	float zFar = 3.0f;
-	float perspectiveMatrix[16];
-	memset(perspectiveMatrix, 0, sizeof(float)*16);
+	memset(perspectiveMatrix, 0, sizeof(float) * 16);
 	perspectiveMatrix[0] = frustumScale;
 	perspectiveMatrix[5] = frustumScale;
-	perspectiveMatrix[10] = (zFar + zNear) / (zNear-zFar);
+	perspectiveMatrix[10] = (zFar + zNear) / (zNear - zFar);
 	perspectiveMatrix[14] = (2 * zFar * zNear) / (zNear - zFar);
 	perspectiveMatrix[11] = -1.0f;
 
 	GLuint offsetUniform = glGetUniformLocation(programId, "offset");
-	GLuint perspectiveMatrixUnif = glGetUniformLocation(programId, "perspectiveMatrix");
+	perspectiveMatrixUnif = glGetUniformLocation(programId, "perspectiveMatrix");
 
 	glUseProgram(programId);
 	glUniform2f(offsetUniform, 0.5f, 0.5f);
@@ -177,13 +77,13 @@ void AppExample02::render(float timeStep) {
 	// initialize clear color
 	glClearColor(0.9f, 0.9f, 0.9f, 1.f);
 	// wipe the drawing surface clear
-	glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// bind program
 	glUseProgram(programId);
 	glBindVertexArray(VAO);
 
-	// draw points 0-3 from the currently bound VAO with current in-use shader
+	// draw points 0-36 from the currently bound VAO with current in-use shader
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	// unbind program
@@ -196,5 +96,12 @@ void AppExample02::cleanUp() {
 
 void AppExample02::reshape(int width, int height) {
 	Log::print("reshape w:%d h:%d", width, height);
+
+	perspectiveMatrix[0] = frustumScale / (width /(float) height);
+	perspectiveMatrix[5] = frustumScale;
+
+	glUseProgram(programId);
+	glUniformMatrix4fv(perspectiveMatrixUnif, 1, GL_FALSE, perspectiveMatrix);
+	glUseProgram(NULL);
 }
 
