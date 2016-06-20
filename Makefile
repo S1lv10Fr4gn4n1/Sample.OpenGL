@@ -7,7 +7,8 @@ SOURCE_FOLDER = ./src
 
 EXAMPLE01 = exam01
 EXAMPLE02 = exam02
-CURRENT_EXAMPLE = $(EXAMPLE02)
+EXAMPLE03 = exam03
+CURRENT_EXAMPLE = $(EXAMPLE03)
 
 $(shell mkdir -p $(OUTPUT_BIN))
 $(shell mkdir -p $(OUTPUT_OBJ))
