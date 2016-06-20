@@ -17,8 +17,8 @@ AppExample01::~AppExample01() {
 }
 
 bool AppExample01::init() {
-	std::string vertexShader = File::getFileContent("./exam01/shader03.vert");
-	std::string fragmentShader = File::getFileContent("./exam01/shader03.frag");
+	std::string vertexShader = File::getFileContent("./exam01/shader.vert");
+	std::string fragmentShader = File::getFileContent("./exam01/shader.frag");
 
 	programId = OpenGLUtils::initGLStructure(vertexShader.c_str(), fragmentShader.c_str());
 
