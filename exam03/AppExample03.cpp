@@ -92,13 +92,14 @@ void AppExample03::render(float timeStep) {
 
 	// initialize clear color
 	glClearColor(0.9f, 0.9f, 0.9f, 1.f);
+	glClearDepth(1.0f);
 	// wipe the drawing surface clear
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glUseProgram(programId);
 
 	glBindVertexArray(VAO);
-	glUniform3f(offsetUniform, 0.0f, 0.0f, 0.85f);
+	glUniform3f(offsetUniform, 0.0f, 0.0f, 0.0f);
 	glDrawElements(GL_TRIANGLES, sizeof(indexData), GL_UNSIGNED_SHORT, 0);
 
 	glUniform3f(offsetUniform, 0.0f, 0.0f, -0.5f);
