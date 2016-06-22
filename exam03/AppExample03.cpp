@@ -13,6 +13,9 @@ GLuint programId = 0;
 GLuint perspectiveMatrixUnif = 0;
 GLuint offsetUniform = 0;
 
+bool depthClamping = false;
+GLfloat offsetHorizontalObject = 0.0f;
+
 AppExample03::AppExample03() {
 }
 
@@ -99,7 +102,7 @@ void AppExample03::render(float timeStep) {
 	glUseProgram(programId);
 
 	glBindVertexArray(VAO);
-	glUniform3f(offsetUniform, 0.0f, 0.0f, 0.0f);
+	glUniform3f(offsetUniform, 0.0f, 0.0f, offsetHorizontalObject);
 	glDrawElements(GL_TRIANGLES, sizeof(indexData), GL_UNSIGNED_SHORT, 0);
 
 	glUniform3f(offsetUniform, 0.0f, 0.0f, -0.5f);
@@ -122,5 +125,23 @@ void AppExample03::reshape(int width, int height) {
 	glUseProgram(programId);
 	glUniformMatrix4fv(perspectiveMatrixUnif, 1, GL_FALSE, perspectiveMatrix);
 	glUseProgram(NULL);
+}
+
+void AppExample03::keyboardHandle(SDL_Event event) {
+	if (event.type == SDL_KEYUP) {
+		if (event.key.keysym.sym == SDLK_SPACE) {
+			depthClamping = !depthClamping;
+			// Depth Clamping
+			if (depthClamping) {
+				glEnable(GL_DEPTH_CLAMP);
+			} else {
+				glDisable(GL_DEPTH_CLAMP);
+			}
+		} else if (event.key.keysym.sym == SDLK_EQUALS) {
+			offsetHorizontalObject += 0.05f;
+		} else if (event.key.keysym.sym == SDLK_MINUS) {
+			offsetHorizontalObject -= 0.05f;
+		}
+	}
 }
 

@@ -15,6 +15,7 @@ public:
 	void render(float timeStep);
 	void cleanUp();
 	void reshape(int width, int height);
+	void keyboardHandle(SDL_Event event);
 };
 
 #endif /* APPEXAMPLE03_H_ */

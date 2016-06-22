@@ -128,34 +128,46 @@ void Engine::halt(const char *_msg) {
 bool Engine::eventHandler() {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
-		if (event.type == SDL_QUIT) {
-			return false;
-		}
+		switch (event.type) {
+			// application event
+			case SDL_QUIT:
+				return false;
+			// case SDL_SYSWMEVENT:
 
-		if (event.type == SDL_WINDOWEVENT) {
-			switch (event.window.event) {
-				case SDL_WINDOWEVENT_SHOWN:
-					SDL_Log("Window %d shown", event.window.windowID);
-					break;
-				case SDL_WINDOWEVENT_HIDDEN:
-					SDL_Log("Window %d hidden", event.window.windowID);
-					break;
-				case SDL_WINDOWEVENT_RESTORED:
-					SDL_Log("Window %d restored", event.window.windowID);
-					break;
-				case SDL_WINDOWEVENT_FOCUS_GAINED:
-                    countedFrames = 1;
-                    fpsTimer->start();
-					break;
-				case SDL_WINDOWEVENT_FOCUS_LOST:
-                    fpsTimer->stop();
-					break;
-				case SDL_WINDOWEVENT_RESIZED:
-					reshape();
-					break;
-				default:
-					break;
-			}
+			// window event
+			case SDL_WINDOWEVENT:
+				switch (event.window.event) {
+					case SDL_WINDOWEVENT_SHOWN:
+						SDL_Log("Window %d shown", event.window.windowID);
+						break;
+					case SDL_WINDOWEVENT_HIDDEN:
+						SDL_Log("Window %d hidden", event.window.windowID);
+						break;
+					case SDL_WINDOWEVENT_RESTORED:
+						SDL_Log("Window %d restored", event.window.windowID);
+						break;
+					case SDL_WINDOWEVENT_FOCUS_GAINED:
+						countedFrames = 1;
+						fpsTimer->start();
+						break;
+					case SDL_WINDOWEVENT_FOCUS_LOST:
+						fpsTimer->stop();
+						break;
+					case SDL_WINDOWEVENT_RESIZED:
+						reshape();
+						break;
+					default:
+						break;
+				}
+				break;
+
+			// keyboard event
+			case SDL_KEYDOWN:
+			case SDL_KEYUP:
+			case SDL_TEXTEDITING:
+			case SDL_TEXTINPUT:
+				app->keyboardHandle(event);
+				break;
 		}
 	}
 	return true;
