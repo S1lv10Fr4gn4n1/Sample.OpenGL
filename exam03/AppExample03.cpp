@@ -7,7 +7,7 @@
 #include "utils/FileUtils.h"
 #include "data.h"
 
-GLuint VAO1, VAO2 = 0;
+GLuint VAO = 0;
 GLfloat perspectiveMatrix[16];
 GLuint programId = 0;
 GLuint perspectiveMatrixUnif = 0;
@@ -41,27 +41,13 @@ bool AppExample03::init() {
 
 	size_t colorDataOffset = sizeof(float) * 3 * numberOfVertices;
 
-	// create VAO1
-	glGenVertexArrays(1, &VAO1);
-	glBindVertexArray(VAO1);
+	// create VAO
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glEnableVertexAttribArray(0); // layout 1, position
 	glEnableVertexAttribArray(1); // layout 2, color
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*) colorDataOffset);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-	glBindVertexArray(NULL);
-
-
-	size_t posDataOffset = sizeof(float) * 3 * (numberOfVertices/2);
-	colorDataOffset += sizeof(float) * 4 * (numberOfVertices/2);
-
-	// create VAO2
-	glGenVertexArrays(1, &VAO2);
-	glBindVertexArray(VAO2);
-	glEnableVertexAttribArray(0); // layout 1, position
-	glEnableVertexAttribArray(1); // layout 2, color
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*) posDataOffset);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*) colorDataOffset);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 	glBindVertexArray(NULL);
@@ -111,13 +97,12 @@ void AppExample03::render(float timeStep) {
 
 	glUseProgram(programId);
 
-	glBindVertexArray(VAO1);
-	glUniform3f(offsetUniform, 0.0f, 0.0f, 0.0f);
+	glBindVertexArray(VAO);
+	glUniform3f(offsetUniform, 0.0f, 0.0f, 0.85f);
 	glDrawElements(GL_TRIANGLES, sizeof(indexData), GL_UNSIGNED_SHORT, 0);
 
-	glBindVertexArray(VAO2);
-	glUniform3f(offsetUniform, 0.0f, 0.0f, -1.0f);
-	glDrawElements(GL_TRIANGLES, sizeof(indexData), GL_UNSIGNED_SHORT, 0);
+	glUniform3f(offsetUniform, 0.0f, 0.0f, -0.5f);
+	glDrawElementsBaseVertex(GL_TRIANGLES, sizeof(indexData), GL_UNSIGNED_SHORT, 0, numberOfVertices/2);
 
 	glBindVertexArray(NULL);
 	glUseProgram(NULL);
